@@ -33,4 +33,6 @@ public class Item {
     @ManyToOne 
     @JoinColumn(name = "business_id", nullable = false)
     private Business business;
+
+    private String imageKey;
 }

@@ -9,5 +9,6 @@ public record ItemResponse(
     String description,
     Double price,
     OfferType offerType,
+    String imageUrl,
     BusinessSummaryResponse business
 ) {}

@@ -1,6 +1,5 @@
 package com.elksandro.seunegocio.dto.item;
 
-import com.elksandro.seunegocio.model.enums.CategoryType;
 import com.elksandro.seunegocio.model.enums.OfferType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,12 +19,6 @@ public record ItemRequest(
 
     @NotNull(message = "O tipo de oferta é obrigatório (PRODUCT ou SERVICE).")
     OfferType offerType,
-
-    @NotNull(message = "A categoria é obrigatória.")
-    CategoryType categoryType,
-
-    @NotNull(message = "O ID do vendedor é obrigatório.")
-    Long userId,
     
     @NotNull(message = "O ID do Negócio é obrigatório.")
     Long businessId

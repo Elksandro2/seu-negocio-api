@@ -13,13 +13,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.elksandro.seunegocio.dto.item.ItemRequest;
 import com.elksandro.seunegocio.dto.item.ItemResponse;
 import com.elksandro.seunegocio.model.User;
 import com.elksandro.seunegocio.service.ItemService;
 import com.elksandro.seunegocio.service.exception.BusinessNotFoundException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.validation.Valid;
 
@@ -32,6 +35,22 @@ public class ItemController {
     public ItemController(ItemService itemService) {
         this.itemService = itemService;
     }
+    
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, 
+                 consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ItemResponse> createItem(
+            @RequestPart("itemRequest") String itemRequestJson,
+            @RequestPart("image") MultipartFile image,
+            @AuthenticationPrincipal User loggedUser) 
+            throws Exception { 
+        
+        ObjectMapper objectMapper = new ObjectMapper();
+        ItemRequest itemRequest = objectMapper.readValue(itemRequestJson, ItemRequest.class);
+
+        ItemResponse itemResponse = itemService.createItem(itemRequest, image, loggedUser.getId());
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(itemResponse);
+    }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ItemResponse>> getAllItems() {
@@ -39,17 +58,6 @@ public class ItemController {
         return ResponseEntity.ok(items);
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, 
-                 consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ItemResponse> createItem(
-            @RequestBody @Valid ItemRequest itemRequest,
-            @AuthenticationPrincipal User loggedUser) 
-            throws BusinessNotFoundException { 
-                
-        ItemResponse itemResponse = itemService.createItem(itemRequest, loggedUser.getId());
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(itemResponse);
-    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemResponse> getItemById(@PathVariable Long id) {
