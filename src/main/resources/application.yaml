@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: Seu Negocio API
+  profiles:
+    active: dev
