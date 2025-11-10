@@ -28,6 +28,8 @@ public class Business {
 
     private String address;
 
+    private String logoKey;
+
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;

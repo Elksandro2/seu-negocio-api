@@ -4,5 +4,6 @@ public record UserResponse(
     Long id,
     String name,
     String email,
-    String whatsapp
+    String whatsapp,
+    String profilePictureUrl
 ) {}

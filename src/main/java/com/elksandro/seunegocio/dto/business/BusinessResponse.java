@@ -12,6 +12,7 @@ public record BusinessResponse(
     String address,
     String categoryType,
     String categoryDisplayName,
+    String logoUrl,
     UserSummaryResponse owner, 
     List<ItemResponse> items
 ) {}

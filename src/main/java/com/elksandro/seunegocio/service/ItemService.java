@@ -39,10 +39,7 @@ public class ItemService {
                 .orElseThrow(() -> new BusinessNotFoundException(
                         "Negócio não encontrado ou não pertence ao usuário logado."));
 
-        String imageKey = null;
-        if (image != null && !image.isEmpty()) {
-            imageKey = minioService.uploadFile(image);
-        }
+        String imageKey = minioService.uploadFile(image);
 
         Item item = new Item();
         item.setName(itemRequest.name());
@@ -105,7 +102,9 @@ public class ItemService {
                 business.getId(),
                 business.getName(),
                 business.getAddress(),
-                business.getCategoryType().name());
+                business.getCategoryType().name(),
+                minioService.getObjectUrl(business.getLogoKey())
+                );
 
         return new ItemResponse(
                 item.getId(),

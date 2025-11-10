@@ -4,5 +4,6 @@ public record BusinessSummaryResponse(
     Long id,
     String name,
     String address,
-    String categoryType
+    String categoryType,
+    String logoUrl
 ) {}

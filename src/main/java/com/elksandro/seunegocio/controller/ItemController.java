@@ -21,7 +21,6 @@ import com.elksandro.seunegocio.dto.item.ItemRequest;
 import com.elksandro.seunegocio.dto.item.ItemResponse;
 import com.elksandro.seunegocio.model.User;
 import com.elksandro.seunegocio.service.ItemService;
-import com.elksandro.seunegocio.service.exception.BusinessNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.validation.Valid;

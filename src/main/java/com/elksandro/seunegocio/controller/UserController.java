@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.elksandro.seunegocio.dto.user.TokenResponse;
 import com.elksandro.seunegocio.dto.user.UserLogin;
@@ -13,8 +14,8 @@ import com.elksandro.seunegocio.dto.user.UserResponse;
 import com.elksandro.seunegocio.dto.user.UserUpdate;
 import com.elksandro.seunegocio.model.User;
 import com.elksandro.seunegocio.service.UserService;
-import com.elksandro.seunegocio.service.exception.UserAlreadyExistsException;
 import com.elksandro.seunegocio.service.exception.UserNotFoundException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.validation.Valid;
 
@@ -29,11 +30,15 @@ public class UserController {
 
     @PostMapping(value = "/register", 
                  produces = MediaType.APPLICATION_JSON_VALUE, 
-                 consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserResponse> registerUser(@RequestBody @Valid UserRequest userRequest)
-            throws UserAlreadyExistsException {
+                 consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponse> registerUser(
+            @RequestPart("userRequest") String userRequestJson,
+            @RequestPart(value = "image", required = false) MultipartFile image) throws Exception {
         
-        UserResponse userResponse = userService.registerUser(userRequest);
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserRequest userRequest = objectMapper.readValue(userRequestJson, UserRequest.class);
+        
+        UserResponse userResponse = userService.registerUser(userRequest, image);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
     }
