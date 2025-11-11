@@ -2,6 +2,7 @@ package com.elksandro.seunegocio.controller.exception;
 
 import java.time.Instant;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -66,5 +67,15 @@ public class ErrorExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> unauthorizedErro(UnauthorizedException e, HttpServletRequest request) {
         return createErrorResponseEntity(HttpStatus.FORBIDDEN, e.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> dataIntegrityViolation(DataIntegrityViolationException e, HttpServletRequest request){
+        HttpStatus status = HttpStatus.CONFLICT; 
+        
+        String message = "Falha de integridade de dados. Detalhe: " + e.getRootCause().getMessage();
+        
+        ErrorResponse errorResponse = new ErrorResponse(Instant.now(), status.value(), message, request.getRequestURI());
+        return ResponseEntity.status(status).body(errorResponse);
     }
 }

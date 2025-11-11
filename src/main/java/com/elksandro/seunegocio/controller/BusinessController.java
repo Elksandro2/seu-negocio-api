@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/businesses")
+@RequestMapping("/v1/businesses")
 public class BusinessController {
 
     private final BusinessService businessService;

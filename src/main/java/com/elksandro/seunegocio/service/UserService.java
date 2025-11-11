@@ -172,6 +172,11 @@ public class UserService {
             throw new IllegalArgumentException("A senha é obrigatória.");
         }
 
+        // senha precisa ter entre 8 e 20 caracteres
+        if (request.password().length() > 20 || request.password().length() < 8) {
+            throw new IllegalArgumentException("A senha deve ter entre 8 e 20 caracteres.");
+        }
+
         if (request.password().length() < 6) {
             throw new IllegalArgumentException("A senha deve ter no mínimo 6 caracteres.");
         }

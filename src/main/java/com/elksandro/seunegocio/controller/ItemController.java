@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/items")
+@RequestMapping("/v1/items")
 public class ItemController {
     
     private final ItemService itemService;

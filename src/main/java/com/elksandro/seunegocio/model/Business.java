@@ -1,5 +1,6 @@
 package com.elksandro.seunegocio.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.elksandro.seunegocio.model.enums.CategoryType;
@@ -39,5 +40,5 @@ public class Business {
     private CategoryType categoryType;
 
     @OneToMany(mappedBy = "business", cascade = CascadeType.REMOVE)
-    private List<Item> items;
+    private List<Item> items = new ArrayList<>();
 }
