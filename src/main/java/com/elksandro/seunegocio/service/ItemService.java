@@ -103,7 +103,8 @@ public class ItemService {
                 business.getName(),
                 business.getAddress(),
                 business.getCategoryType().name(),
-                minioService.getObjectUrl(business.getLogoKey())
+                minioService.getObjectUrl(business.getLogoKey()),
+                business.getOwner().getWhatsapp()
                 );
 
         return new ItemResponse(

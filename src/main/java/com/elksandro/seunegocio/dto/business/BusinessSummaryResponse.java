@@ -5,5 +5,6 @@ public record BusinessSummaryResponse(
     String name,
     String address,
     String categoryType,
-    String logoUrl
+    String logoUrl,
+    String ownerWhatsapp
 ) {}
