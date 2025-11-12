@@ -57,7 +57,7 @@ public class TokenProvider {
                 .verify(token)
                 .getSubject();
         } catch (JWTVerificationException e){
-            throw new TokenException(e.getMessage());
+            return null;
         }
     }
 

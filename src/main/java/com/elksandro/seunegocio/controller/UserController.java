@@ -28,52 +28,56 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping(value = "/register", 
-                 produces = MediaType.APPLICATION_JSON_VALUE, 
-                 consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserResponse> registerUser(
             @RequestPart("userRequest") String userRequestJson,
             @RequestPart(value = "image", required = false) MultipartFile image) throws Exception {
-        
+
         ObjectMapper objectMapper = new ObjectMapper();
         UserRequest userRequest = objectMapper.readValue(userRequestJson, UserRequest.class);
-        
+
         UserResponse userResponse = userService.registerUser(userRequest, image);
-        
+
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
     }
 
-    @PostMapping(value = "/login", 
-                 produces = MediaType.APPLICATION_JSON_VALUE, 
-                 consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> loginUser(@RequestBody @Valid UserLogin userLogin) {
-        
+
         TokenResponse tokenResponse = userService.loginUser(userLogin);
-        
+
         return ResponseEntity.ok(tokenResponse);
     }
 
     @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponse> findUserAuthenticated(@AuthenticationPrincipal User user) {
-        
+
         UserResponse userResponse = userService.findUserById(user.getId());
-        
+
         return ResponseEntity.ok(userResponse);
     }
 
-    @PatchMapping(value = "/{id}", 
-                  produces = MediaType.APPLICATION_JSON_VALUE, 
-                  consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponse> updateUser(
-            @PathVariable Long id, 
+            @PathVariable Long id,
             @RequestBody @Valid UserUpdate userUpdate,
             @AuthenticationPrincipal User loggedUser) throws UserNotFoundException {
-        
+
         if (!loggedUser.getId().equals(id)) {
-             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        
+
         UserResponse userResponse = userService.updateUser(id, userUpdate);
+
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @PatchMapping(value = "picture", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponse> updateProfilePicture(
+            @RequestPart("image") MultipartFile image,
+            @AuthenticationPrincipal User loggedUser) throws Exception {
+        
+        UserResponse userResponse = userService.updateProfilePicture(loggedUser.getId(), image);
         
         return ResponseEntity.ok(userResponse);
     }
@@ -82,13 +86,13 @@ public class UserController {
     public ResponseEntity<Void> removeUser(
             @PathVariable Long id,
             @AuthenticationPrincipal User loggedUser) throws UserNotFoundException {
-        
+
         if (!loggedUser.getId().equals(id)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         userService.removeUser(id);
-        
+
         return ResponseEntity.noContent().build();
     }
 }
