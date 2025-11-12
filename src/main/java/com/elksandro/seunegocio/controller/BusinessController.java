@@ -1,8 +1,6 @@
 package com.elksandro.seunegocio.controller;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.elksandro.seunegocio.dto.business.BusinessRequest;
 import com.elksandro.seunegocio.dto.business.BusinessResponse;
+import com.elksandro.seunegocio.dto.business.CategoryResponse;
 import com.elksandro.seunegocio.model.User;
 import com.elksandro.seunegocio.model.enums.CategoryType;
 import com.elksandro.seunegocio.service.BusinessService;
@@ -53,15 +52,14 @@ public class BusinessController {
     }
 
     @GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<String>> listCategories() {
-        List<String> categories = Arrays.stream(CategoryType.values())
-                .map(Enum::name)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<CategoryResponse>> findAllCategories() {
+        
+        List<CategoryResponse> categories = businessService.findAllCategories(); 
         return ResponseEntity.ok(categories);
     }
 
     @GetMapping(value = "/category/{categoryType}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<BusinessResponse>> getBusinessesByCategory(
+    public ResponseEntity<List<BusinessResponse>> findBusinessesByCategory(
             @PathVariable String categoryType) {
 
         try {
@@ -74,13 +72,13 @@ public class BusinessController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BusinessResponse> getBusinessById(@PathVariable Long id) {
+    public ResponseEntity<BusinessResponse> findBusinessById(@PathVariable Long id) {
         BusinessResponse businessResponse = businessService.findBusinessById(id);
         return ResponseEntity.ok(businessResponse);
     }
 
     @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<BusinessResponse>> getMyBusinesses(
+    public ResponseEntity<List<BusinessResponse>> findMyBusinesses(
             @AuthenticationPrincipal User loggedUser) {
 
         List<BusinessResponse> businesses = businessService.findBusinessByOwner(loggedUser.getId());

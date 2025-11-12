@@ -1,5 +1,6 @@
 package com.elksandro.seunegocio.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.elksandro.seunegocio.dto.business.BusinessRequest;
 import com.elksandro.seunegocio.dto.business.BusinessResponse;
+import com.elksandro.seunegocio.dto.business.CategoryResponse;
 import com.elksandro.seunegocio.dto.item.ItemResponse;
 import com.elksandro.seunegocio.dto.user.UserSummaryResponse;
 import com.elksandro.seunegocio.model.Business;
@@ -88,6 +90,12 @@ public class BusinessService {
                 .collect(Collectors.toList());
     }
 
+    public List<CategoryResponse> findAllCategories() {
+        return Arrays.stream(CategoryType.values())
+                .map(c -> new CategoryResponse(c.name(), c.getDisplayName()))
+                .collect(Collectors.toList());
+    }
+
     public BusinessResponse updateBusiness(Long businessId, BusinessRequest businessRequest, Long loggedUserId) {
         Business business = businessRepository.findByIdAndOwnerId(businessId, loggedUserId)
                 .orElseThrow(() -> new UnauthorizedException("Negócio não encontrado ou você não é o proprietário."));
@@ -118,8 +126,7 @@ public class BusinessService {
                 business.getOwner().getId(),
                 business.getOwner().getName(),
                 business.getOwner().getWhatsapp(),
-                minioService.getObjectUrl(business.getLogoKey())
-                );
+                minioService.getObjectUrl(business.getLogoKey()));
 
         List<ItemResponse> itemResponses = business.getItems().stream()
                 .map(itemService::convertToResponse)

@@ -52,14 +52,14 @@ public class ItemController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ItemResponse>> getAllItems() {
+    public ResponseEntity<List<ItemResponse>> findAllItems() {
         List<ItemResponse> items = itemService.findAllItems();
         return ResponseEntity.ok(items);
     }
 
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ItemResponse> getItemById(@PathVariable Long id) {
+    public ResponseEntity<ItemResponse> findItemById(@PathVariable Long id) {
         ItemResponse item = itemService.findItemById(id);
         return ResponseEntity.ok(item);
     }
