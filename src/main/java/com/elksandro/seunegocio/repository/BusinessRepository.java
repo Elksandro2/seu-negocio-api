@@ -15,4 +15,5 @@ public interface BusinessRepository extends JpaRepository<Business, Long> {
     List<Business> findByOwner(User owner);
     Optional<Business> findByIdAndOwnerId(Long businessId, Long ownerId);
     List<Business> findByCategoryType(CategoryType categoryType);
+    Optional<Business> findByName(String name);
 }

@@ -29,19 +29,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> {})
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(request -> {
-                request.requestMatchers("/", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
-                request.requestMatchers(HttpMethod.POST, "/v1/user/register").permitAll();
-                request.requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll();
-                request.requestMatchers(HttpMethod.GET, "/v1/businesses/**").permitAll();
-                request.requestMatchers(HttpMethod.GET, "/v1/items/**").permitAll();
-                request.anyRequest().authenticated();
-            })
-            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-            .build();
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> {
+                })
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(request -> {
+                    request.requestMatchers("/", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
+                    request.requestMatchers(HttpMethod.POST, "/v1/user/register").permitAll();
+                    request.requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll();
+                    request.requestMatchers(HttpMethod.GET, "/v1/businesses/**").permitAll();
+                    request.requestMatchers(HttpMethod.POST, "/v1/businesses").authenticated();
+                    request.requestMatchers(HttpMethod.PATCH, "/v1/businesses/**").authenticated();
+                    request.requestMatchers(HttpMethod.DELETE, "/v1/businesses/**").authenticated();
+                    request.requestMatchers(HttpMethod.GET, "/v1/items/**").permitAll();
+                    request.anyRequest().authenticated();
+                })
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
@@ -50,7 +54,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

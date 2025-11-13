@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.elksandro.seunegocio.service.exception.BusinessAlreadyExistsException;
 import com.elksandro.seunegocio.service.exception.BusinessNotFoundException;
 import com.elksandro.seunegocio.service.exception.ItemNotFoundException;
 import com.elksandro.seunegocio.service.exception.UnauthorizedException;
@@ -62,6 +63,11 @@ public class ErrorExceptionHandler {
     @ExceptionHandler({UserNotFoundException.class, BusinessNotFoundException.class, ItemNotFoundException.class})
     public ResponseEntity<ErrorResponse> resourceNotFoundErro(RuntimeException e, HttpServletRequest request) {
         return createErrorResponseEntity(HttpStatus.NOT_FOUND, e.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(BusinessAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessAlreadyExists(BusinessAlreadyExistsException e, HttpServletRequest request) {
+        return createErrorResponseEntity(HttpStatus.CONFLICT, e.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(UnauthorizedException.class)

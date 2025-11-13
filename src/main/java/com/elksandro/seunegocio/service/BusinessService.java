@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,7 @@ import com.elksandro.seunegocio.model.enums.CategoryType;
 import com.elksandro.seunegocio.model.enums.Role;
 import com.elksandro.seunegocio.repository.BusinessRepository;
 import com.elksandro.seunegocio.repository.UserRepository;
+import com.elksandro.seunegocio.service.exception.BusinessAlreadyExistsException;
 import com.elksandro.seunegocio.service.exception.UnauthorizedException;
 import com.elksandro.seunegocio.service.exception.UserNotFoundException;
 
@@ -42,6 +44,11 @@ public class BusinessService {
             throws Exception {
         validateBusinessRequest(businessRequest, logo);
 
+        if (businessRepository.findByName(businessRequest.name()).isPresent()) {
+            throw new BusinessAlreadyExistsException(
+                    "Já existe um negócio cadastrado com este nome. Tente outro nome.");
+        }
+
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário proprietário não encontrado."));
 
@@ -50,18 +57,32 @@ public class BusinessService {
             userRepository.save(owner);
         }
 
-        String logoKey = minioService.uploadFile(logo);
+        String logoKey = null;
+        try {
+            logoKey = minioService.uploadFile(logo);
 
-        Business business = new Business();
-        business.setName(businessRequest.name());
-        business.setDescription(businessRequest.description());
-        business.setAddress(businessRequest.address());
-        business.setCategoryType(businessRequest.categoryType());
-        business.setOwner(owner);
-        business.setLogoKey(logoKey);
+            Business business = new Business();
+            business.setName(businessRequest.name());
+            business.setDescription(businessRequest.description());
+            business.setAddress(businessRequest.address());
+            business.setCategoryType(businessRequest.categoryType());
+            business.setOwner(owner);
+            business.setLogoKey(logoKey);
 
-        Business savedBusiness = businessRepository.save(business);
-        return convertToResponse(savedBusiness);
+            Business savedBusiness = businessRepository.save(business);
+            return convertToResponse(savedBusiness);
+        } catch (Exception e) {
+            if (logoKey != null) {
+                minioService.deleteObject(logoKey);
+            }
+
+            if (e instanceof DataIntegrityViolationException) {
+                throw new BusinessAlreadyExistsException(
+                        "Falha ao salvar: Nome de negócio já existe ou dados são inválidos.");
+            }
+
+            throw e;
+        }
     }
 
     public BusinessResponse findBusinessById(Long id) {
