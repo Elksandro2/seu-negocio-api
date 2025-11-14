@@ -42,6 +42,9 @@ public class SecurityConfig {
                     request.requestMatchers(HttpMethod.PATCH, "/v1/businesses/**").authenticated();
                     request.requestMatchers(HttpMethod.DELETE, "/v1/businesses/**").authenticated();
                     request.requestMatchers(HttpMethod.GET, "/v1/items/**").permitAll();
+                    request.requestMatchers(HttpMethod.POST, "/v1/items").authenticated();
+                    request.requestMatchers(HttpMethod.PATCH, "/v1/items/**").authenticated();
+                    request.requestMatchers(HttpMethod.DELETE, "/v1/items/**").authenticated();
                     request.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
