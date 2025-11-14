@@ -37,6 +37,9 @@ public class SecurityConfig {
                     request.requestMatchers("/", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/v1/user/register").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll();
+                    request.requestMatchers(HttpMethod.GET, "/v1/user/me").authenticated();
+                    request.requestMatchers(HttpMethod.PATCH, "/v1/user/**").authenticated();
+                    request.requestMatchers(HttpMethod.DELETE, "/v1/user/**").authenticated();
                     request.requestMatchers(HttpMethod.GET, "/v1/businesses/**").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/v1/businesses").authenticated();
                     request.requestMatchers(HttpMethod.PATCH, "/v1/businesses/**").authenticated();
