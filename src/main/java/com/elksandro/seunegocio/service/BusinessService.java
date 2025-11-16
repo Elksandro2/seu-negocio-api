@@ -147,7 +147,8 @@ public class BusinessService {
                 business.getOwner().getId(),
                 business.getOwner().getName(),
                 business.getOwner().getWhatsapp(),
-                minioService.getObjectUrl(business.getLogoKey()));
+                minioService.getObjectUrl(business.getLogoKey()),
+                business.getOwner().getRole().name());
 
         List<ItemResponse> itemResponses = business.getItems().stream()
                 .map(itemService::convertToResponse)

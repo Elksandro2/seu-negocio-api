@@ -4,5 +4,6 @@ public record UserSummaryResponse(
     Long id,
     String name,
     String whatsapp,
-    String profilePictureUrl
+    String profilePictureUrl,
+    String role
 ) {}

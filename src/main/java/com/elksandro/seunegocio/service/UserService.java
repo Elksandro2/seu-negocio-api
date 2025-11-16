@@ -142,7 +142,8 @@ public class UserService {
                 user.getName(),
                 user.getEmail(),
                 user.getWhatsapp(),
-                profileUrl);
+                profileUrl,
+                user.getRole().name());
     }
 
     public UserSummaryResponse convertToSummaryResponse(User user) {
@@ -152,7 +153,8 @@ public class UserService {
                 user.getId(),
                 user.getName(),
                 user.getWhatsapp(),
-                profileUrl);
+                profileUrl,
+                user.getRole().name());
     }
 
     private void validateUserRequest(UserRequest request) {
