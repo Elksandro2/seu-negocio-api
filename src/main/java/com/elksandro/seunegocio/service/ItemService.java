@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.elksandro.seunegocio.dto.business.BusinessSummaryResponse;
 import com.elksandro.seunegocio.dto.item.ItemRequest;
 import com.elksandro.seunegocio.dto.item.ItemResponse;
+import com.elksandro.seunegocio.dto.item.ItemSummaryResponse;
 import com.elksandro.seunegocio.model.Business;
 import com.elksandro.seunegocio.model.Item;
 import com.elksandro.seunegocio.repository.BusinessRepository;
@@ -34,7 +35,7 @@ public class ItemService {
 
     public ItemResponse createItem(ItemRequest itemRequest, MultipartFile image, Long loggedUserId) throws Exception {
         validateItemRequest(itemRequest, image);
-        
+
         Business business = businessRepository.findByIdAndOwnerId(itemRequest.businessId(), loggedUserId)
                 .orElseThrow(() -> new BusinessNotFoundException(
                         "Negócio não encontrado ou não pertence ao usuário logado."));
@@ -104,8 +105,7 @@ public class ItemService {
                 business.getAddress(),
                 business.getCategoryType().name(),
                 minioService.getObjectUrl(business.getLogoKey()),
-                business.getOwner().getWhatsapp()
-                );
+                business.getOwner().getWhatsapp());
 
         return new ItemResponse(
                 item.getId(),
@@ -115,6 +115,17 @@ public class ItemService {
                 item.getOfferType(),
                 minioService.getObjectUrl(item.getImageKey()),
                 businessSummary);
+    }
+
+    public ItemSummaryResponse convertToSummaryResponse(Item item) {
+        return new ItemSummaryResponse(
+                item.getId(),
+                item.getName(),
+                item.getPrice(),
+                minioService.getObjectUrl(item.getImageKey()),
+                item.getOfferType(),
+                item.getBusiness().getName()
+        );
     }
 
     private void verifyItemOwner(Item item, Long loggedUserId) {

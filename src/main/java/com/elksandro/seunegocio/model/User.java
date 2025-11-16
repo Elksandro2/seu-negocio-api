@@ -48,6 +48,9 @@ public class User implements UserDetails {
 
     private String profilePictureKey;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<CartItem> cartItems = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
