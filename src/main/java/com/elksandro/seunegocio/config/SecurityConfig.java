@@ -45,12 +45,12 @@ public class SecurityConfig {
                     request.requestMatchers(HttpMethod.DELETE, "/v1/user/**").authenticated();
 
                     request.requestMatchers(HttpMethod.POST, "/v1/businesses").authenticated();
-                    request.requestMatchers(HttpMethod.PATCH, "/v1/businesses/**").authenticated();
-                    request.requestMatchers(HttpMethod.DELETE, "/v1/businesses/**").authenticated();
+                    request.requestMatchers(HttpMethod.PATCH, "/v1/businesses/**").hasAuthority("ROLE_SELLER");
+                    request.requestMatchers(HttpMethod.DELETE, "/v1/businesses/**").hasAuthority("ROLE_SELLER");
 
-                    request.requestMatchers(HttpMethod.POST, "/v1/items").authenticated();
-                    request.requestMatchers(HttpMethod.PATCH, "/v1/items/**").authenticated();
-                    request.requestMatchers(HttpMethod.DELETE, "/v1/items/**").authenticated();
+                    request.requestMatchers(HttpMethod.POST, "/v1/items").hasAuthority("ROLE_SELLER");
+                    request.requestMatchers(HttpMethod.PATCH, "/v1/items/**").hasAuthority("ROLE_SELLER");
+                    request.requestMatchers(HttpMethod.DELETE, "/v1/items/**").hasAuthority("ROLE_SELLER");
 
                     request.requestMatchers("/v1/cart/**").authenticated();
                     request.anyRequest().authenticated();
