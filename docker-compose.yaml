@@ -1,0 +1,62 @@
+services:
+  api:
+    container_name: seu-negocio-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8085:8080"
+    networks:
+      - postgres_network
+    environment:
+      - TZ=America/Sao_Paulo
+
+  postgres:
+    container_name: seu-negocio-db
+    image: postgres:16
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: seu-negocio-pgadmin
+    env_file:
+      - .env
+    ports:
+      - "9000:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - postgres_network
+
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: seu-negocio-minio
+    ports:
+      - "1000:9000"
+      - "1001:9001"
+    env_file:
+      - .env
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - postgres_network
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+  minio-data:
+
+networks:
+  postgres_network:
+    driver: bridge
