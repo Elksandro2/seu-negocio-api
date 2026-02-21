@@ -2,4 +2,20 @@ spring:
   application:
     name: Seu Negocio API
   profiles:
-    active: dev
+    active: ${APP_PROFILE:dev}
+  jpa:
+    hibernate:
+      ddl-auto: update
+  output:
+    ansi:
+      enabled: always
+  
+minio:
+  url: ${MINIO_URL:http://localhost:1000}
+  accessKey: ${MINIO_ACCESS_KEY:minioadmin}
+  secretKey: ${MINIO_SECRET_KEY:minioadmin123}
+  bucketName: ${MINIO_BUCKET_NAME:seunegocio-imagens}
+  public-url: ${MINIO_PUBLIC_URL:http://localhost:1000}
+
+api:
+  secret: ${API_SECRET:secret}
