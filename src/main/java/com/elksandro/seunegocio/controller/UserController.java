@@ -1,5 +1,7 @@
 package com.elksandro.seunegocio.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +9,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.elksandro.seunegocio.dto.business.BusinessResponse;
+import com.elksandro.seunegocio.dto.business.BusinessSummaryResponse;
 import com.elksandro.seunegocio.dto.user.TokenResponse;
 import com.elksandro.seunegocio.dto.user.UserLogin;
 import com.elksandro.seunegocio.dto.user.UserRequest;
@@ -94,5 +98,22 @@ public class UserController {
         userService.removeUser(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/favorite/{businessId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> toggleFavorite(
+            @PathVariable Long businessId,
+            @AuthenticationPrincipal User loggedUser) {
+        
+        boolean isFavorited = userService.toggleFavoriteBusiness(loggedUser.getId(), businessId);
+        return ResponseEntity.ok(isFavorited);
+    }
+
+    @GetMapping(value = "/favorite", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<BusinessResponse>> getMyFavorites(
+            @AuthenticationPrincipal User loggedUser) {
+        
+        List<BusinessResponse> favorites = userService.getFavoriteBusinesses(loggedUser.getId());
+        return ResponseEntity.ok(favorites);
     }
 }

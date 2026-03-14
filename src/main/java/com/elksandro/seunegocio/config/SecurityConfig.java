@@ -40,6 +40,8 @@ public class SecurityConfig {
                     request.requestMatchers(HttpMethod.GET, "/v1/businesses/**").permitAll();
                     request.requestMatchers(HttpMethod.GET, "/v1/items/**").permitAll();
 
+                    request.requestMatchers(HttpMethod.POST, "/v1/user/favorite/**").authenticated();
+                    request.requestMatchers(HttpMethod.GET, "/v1/user/favorite").authenticated();
                     request.requestMatchers(HttpMethod.GET, "/v1/user/me").authenticated();
                     request.requestMatchers(HttpMethod.PATCH, "/v1/user/**").authenticated();
                     request.requestMatchers(HttpMethod.DELETE, "/v1/user/**").authenticated();

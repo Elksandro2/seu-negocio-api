@@ -142,7 +142,7 @@ public class BusinessService {
         businessRepository.delete(business);
     }
 
-    private BusinessResponse convertToResponse(Business business) {
+    public BusinessResponse convertToResponse(Business business) {
         UserSummaryResponse ownerSummary = new UserSummaryResponse(
                 business.getOwner().getId(),
                 business.getOwner().getName(),

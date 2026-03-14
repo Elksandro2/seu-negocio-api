@@ -1,9 +1,12 @@
 package com.elksandro.seunegocio.service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,16 +14,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.elksandro.seunegocio.dto.business.BusinessResponse;
+import com.elksandro.seunegocio.dto.business.BusinessSummaryResponse;
+import com.elksandro.seunegocio.dto.item.ItemResponse;
 import com.elksandro.seunegocio.dto.user.TokenResponse;
 import com.elksandro.seunegocio.dto.user.UserLogin;
 import com.elksandro.seunegocio.dto.user.UserRequest;
 import com.elksandro.seunegocio.dto.user.UserResponse;
 import com.elksandro.seunegocio.dto.user.UserSummaryResponse;
 import com.elksandro.seunegocio.dto.user.UserUpdate;
+import com.elksandro.seunegocio.model.Business;
 import com.elksandro.seunegocio.model.User;
 import com.elksandro.seunegocio.model.enums.Role;
+import com.elksandro.seunegocio.repository.BusinessRepository;
 import com.elksandro.seunegocio.repository.UserRepository;
 import com.elksandro.seunegocio.security.TokenProvider;
+import com.elksandro.seunegocio.service.exception.BusinessNotFoundException;
 import com.elksandro.seunegocio.service.exception.UserAlreadyExistsException;
 import com.elksandro.seunegocio.service.exception.UserNotFoundException;
 
@@ -32,16 +41,20 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
     private final MinioService minioService;
+    private final BusinessRepository businessRepository;
+    private final BusinessService businessService;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
             Pattern.CASE_INSENSITIVE);
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager, TokenProvider tokenProvider, MinioService minioService) {
+            AuthenticationManager authenticationManager, TokenProvider tokenProvider, MinioService minioService, BusinessRepository businessRepository, @Lazy BusinessService businessService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
         this.minioService = minioService;
+        this.businessRepository = businessRepository;
+        this.businessService = businessService;
     }
 
     public UserResponse registerUser(UserRequest userRequest, MultipartFile image) throws Exception {
@@ -132,6 +145,36 @@ public class UserService {
         }
 
         userRepository.deleteById(id);
+    }
+
+    public boolean toggleFavoriteBusiness(Long userId, Long businessId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado."));
+        
+        Business business = businessRepository.findById(businessId)
+                .orElseThrow(() -> new BusinessNotFoundException("Negócio não encontrado."));
+
+        boolean isNowFavorited;
+
+        if (user.getFavoriteBusinesses().contains(business)) {
+            user.getFavoriteBusinesses().remove(business);
+            isNowFavorited = false;
+        } else {
+            user.getFavoriteBusinesses().add(business);
+            isNowFavorited = true;
+        }
+
+        userRepository.save(user);
+        return isNowFavorited;
+    }
+
+    public List<BusinessResponse> getFavoriteBusinesses(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado."));
+
+        return user.getFavoriteBusinesses().stream()
+                .map(businessService::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     private UserResponse convertToResponse(User user) {
