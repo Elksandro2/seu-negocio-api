@@ -1,0 +1,119 @@
+package com.elksandro.seunegocio.models.user.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.elksandro.seunegocio.models.business.dto.BusinessResponse;
+import com.elksandro.seunegocio.models.business.dto.BusinessSummaryResponse;
+import com.elksandro.seunegocio.models.user.dto.TokenResponse;
+import com.elksandro.seunegocio.models.user.dto.UserLogin;
+import com.elksandro.seunegocio.models.user.dto.UserRequest;
+import com.elksandro.seunegocio.models.user.dto.UserResponse;
+import com.elksandro.seunegocio.models.user.dto.UserUpdate;
+import com.elksandro.seunegocio.models.user.entity.User;
+import com.elksandro.seunegocio.models.user.service.UserService;
+import com.elksandro.seunegocio.models.user.service.exception.UserNotFoundException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/v1/user")
+public class UserController {
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponse> registerUser(
+            @RequestPart("userRequest") String userRequestJson,
+            @RequestPart(value = "image", required = false) MultipartFile image) throws Exception {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserRequest userRequest = objectMapper.readValue(userRequestJson, UserRequest.class);
+
+        UserResponse userResponse = userService.registerUser(userRequest, image);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
+    }
+
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TokenResponse> loginUser(@RequestBody @Valid UserLogin userLogin) {
+
+        TokenResponse tokenResponse = userService.loginUser(userLogin);
+
+        return ResponseEntity.ok(tokenResponse);
+    }
+
+    @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserResponse> findUserAuthenticated(@AuthenticationPrincipal User user) {
+
+        UserResponse userResponse = userService.findUserById(user.getId());
+
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserResponse> updateUser(
+            @PathVariable Long id,
+            @RequestBody @Valid UserUpdate userUpdate,
+            @AuthenticationPrincipal User loggedUser) throws UserNotFoundException {
+
+        if (!loggedUser.getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        UserResponse userResponse = userService.updateUser(id, userUpdate);
+
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @PatchMapping(value = "picture", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponse> updateProfilePicture(
+            @RequestPart("image") MultipartFile image,
+            @AuthenticationPrincipal User loggedUser) throws Exception {
+        
+        UserResponse userResponse = userService.updateProfilePicture(loggedUser.getId(), image);
+        
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> removeUser(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User loggedUser) throws UserNotFoundException {
+
+        if (!loggedUser.getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        userService.removeUser(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/favorite/{businessId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> toggleFavorite(
+            @PathVariable Long businessId,
+            @AuthenticationPrincipal User loggedUser) {
+        
+        boolean isFavorited = userService.toggleFavoriteBusiness(loggedUser.getId(), businessId);
+        return ResponseEntity.ok(isFavorited);
+    }
+
+    @GetMapping(value = "/favorite", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<BusinessResponse>> getMyFavorites(
+            @AuthenticationPrincipal User loggedUser) {
+        
+        List<BusinessResponse> favorites = userService.getFavoriteBusinesses(loggedUser.getId());
+        return ResponseEntity.ok(favorites);
+    }
+}
