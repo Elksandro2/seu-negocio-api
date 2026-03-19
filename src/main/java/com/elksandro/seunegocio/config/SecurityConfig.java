@@ -55,6 +55,10 @@ public class SecurityConfig {
                     request.requestMatchers(HttpMethod.DELETE, "/v1/items/**").hasAuthority("ROLE_SELLER");
 
                     request.requestMatchers("/v1/cart/**").authenticated();
+
+                    request.requestMatchers(HttpMethod.GET, "/v1/orders/seller").hasAuthority("ROLE_SELLER");
+                    request.requestMatchers("/v1/orders/**").authenticated();
+
                     request.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

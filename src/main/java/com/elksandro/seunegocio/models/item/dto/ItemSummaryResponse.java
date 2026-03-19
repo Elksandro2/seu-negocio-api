@@ -8,7 +8,7 @@ public record ItemSummaryResponse(
     Long id,
     String name,
     BigDecimal price,
-    Long stockQuantity,
+    Integer stockQuantity,
     String imageUrl,
     OfferType offerType,
     String businessName

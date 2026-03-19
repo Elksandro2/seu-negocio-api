@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.elksandro.seunegocio.models.business.service.exception.BusinessAlreadyExistsException;
 import com.elksandro.seunegocio.models.business.service.exception.BusinessNotFoundException;
 import com.elksandro.seunegocio.models.item.service.exception.ItemNotFoundException;
+import com.elksandro.seunegocio.models.order.service.exception.InsufficientStockException;
 import com.elksandro.seunegocio.models.user.service.exception.UnauthorizedException;
 import com.elksandro.seunegocio.models.user.service.exception.UserAlreadyExistsException;
 import com.elksandro.seunegocio.models.user.service.exception.UserNotFoundException;
@@ -83,5 +84,10 @@ public class ErrorExceptionHandler {
         
         ErrorResponse errorResponse = new ErrorResponse(Instant.now(), status.value(), message, request.getRequestURI());
         return ResponseEntity.status(status).body(errorResponse);
+    }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<ErrorResponse> handleInsufficientStock(InsufficientStockException e, HttpServletRequest request) {
+        return createErrorResponseEntity(HttpStatus.BAD_REQUEST, e.getMessage(), request.getRequestURI());
     }
 }

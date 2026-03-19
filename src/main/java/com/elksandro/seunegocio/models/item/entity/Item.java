@@ -32,7 +32,7 @@ public class Item {
     private BigDecimal price;
 
     @Column(name = "stock_quantity")
-    private Long stockQuantity;
+    private Integer stockQuantity;
 
     @Enumerated(EnumType.STRING) 
     @Column(name = "offer_type", nullable = false)

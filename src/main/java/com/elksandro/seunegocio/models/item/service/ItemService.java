@@ -48,7 +48,7 @@ public class ItemService {
         item.setDescription(itemRequest.description());
         item.setPrice(itemRequest.price());
         item.setOfferType(itemRequest.offerType());
-        item.setStockQuantity(itemRequest.stockQuantity() != null ? itemRequest.stockQuantity() : 0L);
+        item.setStockQuantity(itemRequest.stockQuantity() != null ? itemRequest.stockQuantity() : 0);
         item.setBusiness(business);
         item.setImageKey(imageKey);
 
@@ -80,13 +80,13 @@ public class ItemService {
         item.setDescription(itemRequest.description());
         item.setPrice(itemRequest.price());
         item.setOfferType(itemRequest.offerType());
-        item.setStockQuantity(itemRequest.stockQuantity() != null ? itemRequest.stockQuantity() : 0L);
+        item.setStockQuantity(itemRequest.stockQuantity() != null ? itemRequest.stockQuantity() : 0);
 
         Item updatedItem = itemRepository.save(item);
         return convertToResponse(updatedItem);
     }
 
-    public ItemResponse updateItemStock(Long itemId, Long newStock, Long loggedUserId) {
+    public ItemResponse updateItemStock(Long itemId, Integer newStock, Long loggedUserId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Item não encontrado para atualizar estoque."));
 

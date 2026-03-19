@@ -23,7 +23,7 @@ public record ItemRequest(
 
     @NotNull(message = "A quantidade em estoque é obrigatória.")
     @PositiveOrZero(message = "A quantidade em estoque deve ser zero ou positiva.")
-    Long stockQuantity,
+    Integer stockQuantity,
 
     @NotNull(message = "O tipo de oferta é obrigatório (PRODUCT ou SERVICE).")
     OfferType offerType,

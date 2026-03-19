@@ -10,7 +10,7 @@ public record ItemResponse(
     String name,
     String description,
     BigDecimal price,
-    Long stockQuantity,
+    Integer stockQuantity,
     OfferType offerType,
     String imageUrl,
     BusinessSummaryResponse business
