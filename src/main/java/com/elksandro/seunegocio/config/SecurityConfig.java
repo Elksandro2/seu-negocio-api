@@ -34,30 +34,35 @@ public class SecurityConfig {
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> {
+                    // ROTAS PÚBLICAS
                     request.requestMatchers("/", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/v1/user/register").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll();
                     request.requestMatchers(HttpMethod.GET, "/v1/businesses/**").permitAll();
                     request.requestMatchers(HttpMethod.GET, "/v1/items/**").permitAll();
+                    request.requestMatchers(HttpMethod.GET, "/v1/reviews/item/**").permitAll(); 
 
+                    // ROTAS AUTENTICADAS GERAIS (CLIENTES E VENDEDORES)
                     request.requestMatchers(HttpMethod.POST, "/v1/user/favorite/**").authenticated();
                     request.requestMatchers(HttpMethod.GET, "/v1/user/favorite").authenticated();
                     request.requestMatchers(HttpMethod.GET, "/v1/user/me").authenticated();
                     request.requestMatchers(HttpMethod.PATCH, "/v1/user/**").authenticated();
                     request.requestMatchers(HttpMethod.DELETE, "/v1/user/**").authenticated();
+                    
+                    request.requestMatchers("/v1/cart/**").authenticated();
+                    request.requestMatchers("/v1/orders/**").authenticated();
+                    
+                    // Rotas para Criar/Deletar comentários
+                    request.requestMatchers("/v1/reviews/**").authenticated();
 
+                    // ROTAS RESTRITAS APENAS PARA VENDEDORES
                     request.requestMatchers(HttpMethod.POST, "/v1/businesses").authenticated();
                     request.requestMatchers(HttpMethod.PATCH, "/v1/businesses/**").hasAuthority("ROLE_SELLER");
                     request.requestMatchers(HttpMethod.DELETE, "/v1/businesses/**").hasAuthority("ROLE_SELLER");
-
                     request.requestMatchers(HttpMethod.POST, "/v1/items").hasAuthority("ROLE_SELLER");
                     request.requestMatchers(HttpMethod.PATCH, "/v1/items/**").hasAuthority("ROLE_SELLER");
                     request.requestMatchers(HttpMethod.DELETE, "/v1/items/**").hasAuthority("ROLE_SELLER");
-
-                    request.requestMatchers("/v1/cart/**").authenticated();
-
                     request.requestMatchers(HttpMethod.GET, "/v1/orders/seller").hasAuthority("ROLE_SELLER");
-                    request.requestMatchers("/v1/orders/**").authenticated();
 
                     request.anyRequest().authenticated();
                 })
