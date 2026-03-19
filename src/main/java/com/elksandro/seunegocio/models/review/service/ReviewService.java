@@ -10,6 +10,7 @@ import com.elksandro.seunegocio.models.images.service.MinioService;
 import com.elksandro.seunegocio.models.item.entity.Item;
 import com.elksandro.seunegocio.models.item.repository.ItemRepository;
 import com.elksandro.seunegocio.models.item.service.exception.ItemNotFoundException;
+import com.elksandro.seunegocio.models.order.repository.OrderRepository;
 import com.elksandro.seunegocio.models.review.dto.ReviewRequest;
 import com.elksandro.seunegocio.models.review.dto.ReviewResponse;
 import com.elksandro.seunegocio.models.review.entity.Review;
@@ -26,13 +27,15 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final MinioService minioService;
+    private final OrderRepository orderRepository;
 
     public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository,
-            ItemRepository itemRepository, MinioService minioService) {
+            ItemRepository itemRepository, MinioService minioService, OrderRepository orderRepository) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
         this.minioService = minioService;
+        this.orderRepository = orderRepository;
     }
 
     public ReviewResponse createReview(Long userId, ReviewRequest request) {
@@ -41,6 +44,11 @@ public class ReviewService {
 
         Item item = itemRepository.findById(request.itemId())
                 .orElseThrow(() -> new ItemNotFoundException("Item não encontrado para avaliação."));
+
+        boolean hasPurchased = orderRepository.existsByCustomerIdAndItemId(userId, item.getId());
+        if (!hasPurchased) {
+            throw new UnauthorizedException("Você só pode avaliar produtos ou serviços que já comprou.");
+        }
 
         Review review = new Review();
         review.setUser(user);
