@@ -2,7 +2,8 @@ package com.elksandro.seunegocio.models.user.enums;
 
 public enum Role {
     BUYER("Comprador"),
-    SELLER("Vendedor");
+    SELLER("Vendedor"),
+    ADMIN("Administrador");
 
     private final String description;
 

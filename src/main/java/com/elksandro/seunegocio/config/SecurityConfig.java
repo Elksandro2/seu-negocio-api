@@ -64,6 +64,9 @@ public class SecurityConfig {
                     request.requestMatchers(HttpMethod.DELETE, "/v1/items/**").hasAuthority("ROLE_SELLER");
                     request.requestMatchers(HttpMethod.GET, "/v1/orders/seller").hasAuthority("ROLE_SELLER");
 
+                    // ROTA EXCLUSIVA DO ADMINISTRADOR
+                    request.requestMatchers("/v1/admin/**").hasAuthority("ROLE_ADMIN");
+
                     request.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

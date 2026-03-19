@@ -179,6 +179,23 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public List<UserResponse> findAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public void removeUserByAdmin(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado para remoção."));
+
+        if (user.getProfilePictureKey() != null) {
+            minioService.deleteObject(user.getProfilePictureKey());
+        }
+
+        userRepository.deleteById(id);
+    }
+
     private UserResponse convertToResponse(User user) {
         String profileUrl = minioService.getObjectUrl(user.getProfilePictureKey());
 

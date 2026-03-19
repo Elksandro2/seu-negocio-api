@@ -16,6 +16,7 @@ import com.elksandro.seunegocio.models.business.entity.Business;
 import com.elksandro.seunegocio.models.business.enums.CategoryType;
 import com.elksandro.seunegocio.models.business.repository.BusinessRepository;
 import com.elksandro.seunegocio.models.business.service.exception.BusinessAlreadyExistsException;
+import com.elksandro.seunegocio.models.business.service.exception.BusinessNotFoundException;
 import com.elksandro.seunegocio.models.images.service.MinioService;
 import com.elksandro.seunegocio.models.item.dto.ItemResponse;
 import com.elksandro.seunegocio.models.item.service.ItemService;
@@ -136,6 +137,23 @@ public class BusinessService {
         Business business = businessRepository.findByIdAndOwnerId(businessId, loggedUserId)
                 .orElseThrow(() -> new UnauthorizedException(
                         "Negócio não encontrado ou você não tem permissão para remover."));
+
+        if (business.getLogoKey() != null) {
+            minioService.deleteObject(business.getLogoKey());
+        }
+
+        businessRepository.delete(business);
+    }
+
+    public List<BusinessResponse> findAllBusinesses() {
+        return businessRepository.findAll().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public void removeBusinessByAdmin(Long businessId) {
+        Business business = businessRepository.findById(businessId)
+                .orElseThrow(() -> new BusinessNotFoundException("Negócio não encontrado."));
 
         if (business.getLogoKey() != null) {
             minioService.deleteObject(business.getLogoKey());
