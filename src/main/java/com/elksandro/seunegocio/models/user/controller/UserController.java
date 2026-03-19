@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.elksandro.seunegocio.models.business.dto.BusinessResponse;
-import com.elksandro.seunegocio.models.business.dto.BusinessSummaryResponse;
 import com.elksandro.seunegocio.models.user.dto.TokenResponse;
 import com.elksandro.seunegocio.models.user.dto.UserLogin;
 import com.elksandro.seunegocio.models.user.dto.UserRequest;
