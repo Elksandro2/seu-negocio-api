@@ -26,6 +26,9 @@ public class Item {
 
     private Double price;
 
+    @Column(name = "stock_quantity")
+    private Long stockQuantity;
+
     @Enumerated(EnumType.STRING) 
     @Column(name = "offer_type", nullable = false)
     private OfferType offerType;

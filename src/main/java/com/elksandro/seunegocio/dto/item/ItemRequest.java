@@ -14,8 +14,13 @@ public record ItemRequest(
     @NotBlank(message = "A descrição é obrigatória.")
     String description,
 
+    @NotNull(message = "O preço é obrigatório.")
     @PositiveOrZero(message = "O preço deve ser zero ou positivo.")
     Double price,
+
+    @NotNull(message = "A quantidade em estoque é obrigatória.")
+    @PositiveOrZero(message = "A quantidade em estoque deve ser zero ou positiva.")
+    Long stockQuantity,
 
     @NotNull(message = "O tipo de oferta é obrigatório (PRODUCT ou SERVICE).")
     OfferType offerType,

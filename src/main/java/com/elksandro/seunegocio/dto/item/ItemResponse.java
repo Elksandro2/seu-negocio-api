@@ -8,6 +8,7 @@ public record ItemResponse(
     String name,
     String description,
     Double price,
+    Long stockQuantity,
     OfferType offerType,
     String imageUrl,
     BusinessSummaryResponse business

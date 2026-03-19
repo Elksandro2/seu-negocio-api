@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.elksandro.seunegocio.dto.item.ItemRequest;
 import com.elksandro.seunegocio.dto.item.ItemResponse;
+import com.elksandro.seunegocio.dto.item.ItemStockUpdate;
 import com.elksandro.seunegocio.model.User;
 import com.elksandro.seunegocio.service.ItemService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,6 +74,18 @@ public class ItemController {
         @AuthenticationPrincipal User loggedUser
     ) {
         ItemResponse updatedItem = itemService.updateItem(id, itemRequest, loggedUser.getId());
+        return ResponseEntity.ok(updatedItem);
+    }
+
+    @PatchMapping(value = "/{id}/stock", 
+                  produces = MediaType.APPLICATION_JSON_VALUE,
+                  consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ItemResponse> updateItemStock(
+        @PathVariable Long id,
+        @RequestBody @Valid ItemStockUpdate stockUpdate,
+        @AuthenticationPrincipal User loggedUser
+    ) {
+        ItemResponse updatedItem = itemService.updateItemStock(id, stockUpdate.stockQuantity(), loggedUser.getId());
         return ResponseEntity.ok(updatedItem);
     }
     

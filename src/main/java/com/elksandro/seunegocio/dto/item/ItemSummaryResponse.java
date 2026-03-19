@@ -6,6 +6,7 @@ public record ItemSummaryResponse(
     Long id,
     String name,
     Double price,
+    Long stockQuantity,
     String imageUrl,
     OfferType offerType,
     String businessName

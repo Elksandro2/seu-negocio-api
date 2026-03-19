@@ -47,6 +47,7 @@ public class ItemService {
         item.setDescription(itemRequest.description());
         item.setPrice(itemRequest.price());
         item.setOfferType(itemRequest.offerType());
+        item.setStockQuantity(itemRequest.stockQuantity() != null ? itemRequest.stockQuantity() : 0L);
         item.setBusiness(business);
         item.setImageKey(imageKey);
 
@@ -78,8 +79,21 @@ public class ItemService {
         item.setDescription(itemRequest.description());
         item.setPrice(itemRequest.price());
         item.setOfferType(itemRequest.offerType());
+        item.setStockQuantity(itemRequest.stockQuantity() != null ? itemRequest.stockQuantity() : 0L);
 
         Item updatedItem = itemRepository.save(item);
+        return convertToResponse(updatedItem);
+    }
+
+    public ItemResponse updateItemStock(Long itemId, Long newStock, Long loggedUserId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemNotFoundException("Item não encontrado para atualizar estoque."));
+
+        verifyItemOwner(item, loggedUserId);
+
+        item.setStockQuantity(newStock);
+        Item updatedItem = itemRepository.save(item);
+        
         return convertToResponse(updatedItem);
     }
 
@@ -112,6 +126,7 @@ public class ItemService {
                 item.getName(),
                 item.getDescription(),
                 item.getPrice(),
+                item.getStockQuantity(),
                 item.getOfferType(),
                 minioService.getObjectUrl(item.getImageKey()),
                 businessSummary);
@@ -122,6 +137,7 @@ public class ItemService {
                 item.getId(),
                 item.getName(),
                 item.getPrice(),
+                item.getStockQuantity(),
                 minioService.getObjectUrl(item.getImageKey()),
                 item.getOfferType(),
                 item.getBusiness().getName()
