@@ -1,15 +1,16 @@
-package com.elksandro.seunegocio.models.cart.service;
+package com.elksandro.seunegocio.models.cartItem.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.elksandro.seunegocio.models.cart.dto.CartItemRequest;
-import com.elksandro.seunegocio.models.cart.dto.CartItemResponse;
-import com.elksandro.seunegocio.models.cart.entity.CartItem;
-import com.elksandro.seunegocio.models.cart.repository.CartItemRepository;
+import com.elksandro.seunegocio.models.cartItem.dto.CartItemRequest;
+import com.elksandro.seunegocio.models.cartItem.dto.CartItemResponse;
+import com.elksandro.seunegocio.models.cartItem.entity.CartItem;
+import com.elksandro.seunegocio.models.cartItem.repository.CartItemRepository;
 import com.elksandro.seunegocio.models.item.dto.ItemSummaryResponse;
 import com.elksandro.seunegocio.models.item.entity.Item;
 import com.elksandro.seunegocio.models.item.repository.ItemRepository;
@@ -101,7 +102,7 @@ public class CartItemService {
     private CartItemResponse convertToResponse(CartItem cartItem) {
         ItemSummaryResponse itemSummary = itemService.convertToSummaryResponse(cartItem.getItem());
         
-        double subtotal = itemSummary.price() * cartItem.getQuantity();
+        BigDecimal subtotal = itemSummary.price().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
 
         return new CartItemResponse(
                 cartItem.getId(),

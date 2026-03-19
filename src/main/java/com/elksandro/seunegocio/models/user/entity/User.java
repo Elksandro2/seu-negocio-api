@@ -9,7 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.elksandro.seunegocio.models.business.entity.Business;
-import com.elksandro.seunegocio.models.cart.entity.CartItem;
+import com.elksandro.seunegocio.models.cartItem.entity.CartItem;
 import com.elksandro.seunegocio.models.user.enums.Role;
 
 import jakarta.persistence.CascadeType;
@@ -26,12 +26,14 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {

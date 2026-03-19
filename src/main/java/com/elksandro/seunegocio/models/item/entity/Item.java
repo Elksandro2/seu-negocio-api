@@ -1,16 +1,20 @@
 package com.elksandro.seunegocio.models.item.entity;
 
+import java.math.BigDecimal;
+
 import com.elksandro.seunegocio.models.business.entity.Business;
 import com.elksandro.seunegocio.models.item.enums.OfferType;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "items")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Item {
@@ -25,7 +29,7 @@ public class Item {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private Double price;
+    private BigDecimal price;
 
     @Column(name = "stock_quantity")
     private Long stockQuantity;

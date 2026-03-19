@@ -1,18 +1,20 @@
-package com.elksandro.seunegocio.models.cart.entity;
+package com.elksandro.seunegocio.models.cartItem.entity;
 
 import com.elksandro.seunegocio.models.item.entity.Item;
 import com.elksandro.seunegocio.models.user.entity.User;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "cart_items", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"user_id", "item_id"})
 })
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartItem {

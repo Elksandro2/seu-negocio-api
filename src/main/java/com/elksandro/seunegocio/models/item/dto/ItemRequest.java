@@ -1,5 +1,7 @@
 package com.elksandro.seunegocio.models.item.dto;
 
+import java.math.BigDecimal;
+
 import com.elksandro.seunegocio.models.item.enums.OfferType;
 
 import jakarta.validation.constraints.NotBlank;
@@ -17,7 +19,7 @@ public record ItemRequest(
 
     @NotNull(message = "O preço é obrigatório.")
     @PositiveOrZero(message = "O preço deve ser zero ou positivo.")
-    Double price,
+    BigDecimal price,
 
     @NotNull(message = "A quantidade em estoque é obrigatória.")
     @PositiveOrZero(message = "A quantidade em estoque deve ser zero ou positiva.")

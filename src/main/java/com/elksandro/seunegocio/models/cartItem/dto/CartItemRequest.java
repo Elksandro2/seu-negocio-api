@@ -1,4 +1,4 @@
-package com.elksandro.seunegocio.models.cart.dto;
+package com.elksandro.seunegocio.models.cartItem.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

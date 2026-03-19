@@ -1,4 +1,4 @@
-package com.elksandro.seunegocio.models.cart.controller;
+package com.elksandro.seunegocio.models.cartItem.controller;
 
 import java.util.List;
 
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.elksandro.seunegocio.models.cart.dto.CartItemRequest;
-import com.elksandro.seunegocio.models.cart.dto.CartItemResponse;
-import com.elksandro.seunegocio.models.cart.service.CartItemService;
+import com.elksandro.seunegocio.models.cartItem.dto.CartItemRequest;
+import com.elksandro.seunegocio.models.cartItem.dto.CartItemResponse;
+import com.elksandro.seunegocio.models.cartItem.service.CartItemService;
 import com.elksandro.seunegocio.models.user.entity.User;
 
 import jakarta.validation.Valid;
