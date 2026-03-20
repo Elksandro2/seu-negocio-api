@@ -159,12 +159,15 @@ public class OrderService {
     }
 
     private OrderItemResponse convertToItemResponse(OrderItem orderItem) {
-        String imageUrl = minioService.getObjectUrl(orderItem.getItem().getImageKey());
+        Item item = orderItem.getItem();
+
+        String imageUrl = item.getImages().isEmpty() ? null : 
+                          minioService.getObjectUrl(item.getImages().get(0).getImageKey());
         
         return new OrderItemResponse(
                 orderItem.getId(),
-                orderItem.getItem().getId(),
-                orderItem.getItem().getName(),
+                item.getId(),
+                item.getName(),
                 imageUrl,
                 orderItem.getQuantity(),
                 orderItem.getUnitPrice(),

@@ -16,6 +16,7 @@ import com.elksandro.seunegocio.models.item.dto.ItemRequest;
 import com.elksandro.seunegocio.models.item.dto.ItemResponse;
 import com.elksandro.seunegocio.models.item.dto.ItemSummaryResponse;
 import com.elksandro.seunegocio.models.item.entity.Item;
+import com.elksandro.seunegocio.models.item.entity.ItemImage;
 import com.elksandro.seunegocio.models.item.repository.ItemRepository;
 import com.elksandro.seunegocio.models.item.service.exception.ItemNotFoundException;
 import com.elksandro.seunegocio.models.user.service.exception.UnauthorizedException;
@@ -34,14 +35,12 @@ public class ItemService {
         this.minioService = minioService;
     }
 
-    public ItemResponse createItem(ItemRequest itemRequest, MultipartFile image, Long loggedUserId) throws Exception {
-        validateItemRequest(itemRequest, image);
+    public ItemResponse createItem(ItemRequest itemRequest, List<MultipartFile> images, Long loggedUserId) throws Exception {
+        validateItemRequest(itemRequest, images);
 
         Business business = businessRepository.findByIdAndOwnerId(itemRequest.businessId(), loggedUserId)
                 .orElseThrow(() -> new BusinessNotFoundException(
                         "Negócio não encontrado ou não pertence ao usuário logado."));
-
-        String imageKey = minioService.uploadFile(image);
 
         Item item = new Item();
         item.setName(itemRequest.name());
@@ -50,7 +49,12 @@ public class ItemService {
         item.setOfferType(itemRequest.offerType());
         item.setStockQuantity(itemRequest.stockQuantity() != null ? itemRequest.stockQuantity() : 0);
         item.setBusiness(business);
-        item.setImageKey(imageKey);
+
+        for (MultipartFile imageFile : images) {
+            String imageKey = minioService.uploadFile(imageFile);
+            ItemImage itemImage = new ItemImage(null, item, imageKey);
+            item.getImages().add(itemImage);
+        }
 
         Item savedItem = itemRepository.save(item);
         return convertToResponse(savedItem);
@@ -104,8 +108,8 @@ public class ItemService {
 
         verifyItemOwner(item, loggedUserId);
 
-        if (item.getImageKey() != null) {
-            minioService.deleteObject(item.getImageKey());
+        for (ItemImage img : item.getImages()) {
+            minioService.deleteObject(img.getImageKey());
         }
 
         itemRepository.delete(item);
@@ -115,33 +119,29 @@ public class ItemService {
         Business business = item.getBusiness();
 
         BusinessSummaryResponse businessSummary = new BusinessSummaryResponse(
-                business.getId(),
-                business.getName(),
-                business.getAddress(),
-                business.getCategoryType().name(),
-                minioService.getObjectUrl(business.getLogoKey()),
+                business.getId(), business.getName(), business.getAddress(),
+                business.getCategoryType().name(), minioService.getObjectUrl(business.getLogoKey()),
                 business.getOwner().getWhatsapp());
 
+        List<String> imageUrls = item.getImages().stream()
+                .map(img -> minioService.getObjectUrl(img.getImageKey()))
+                .collect(Collectors.toList());
+
         return new ItemResponse(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getPrice(),
-                item.getStockQuantity(),
-                item.getOfferType(),
-                minioService.getObjectUrl(item.getImageKey()),
+                item.getId(), item.getName(), item.getDescription(), item.getPrice(),
+                item.getStockQuantity(), item.getOfferType(), 
+                imageUrls,
                 businessSummary);
     }
 
     public ItemSummaryResponse convertToSummaryResponse(Item item) {
+        String coverImageUrl = item.getImages().isEmpty() ? null : 
+                               minioService.getObjectUrl(item.getImages().get(0).getImageKey());
+
         return new ItemSummaryResponse(
-                item.getId(),
-                item.getName(),
-                item.getPrice(),
-                item.getStockQuantity(),
-                minioService.getObjectUrl(item.getImageKey()),
-                item.getOfferType(),
-                item.getBusiness().getName()
+                item.getId(), item.getName(), item.getPrice(), item.getStockQuantity(),
+                coverImageUrl,
+                item.getOfferType(), item.getBusiness().getName()
         );
     }
 
@@ -151,7 +151,7 @@ public class ItemService {
         }
     }
 
-    private void validateItemRequest(ItemRequest request, MultipartFile image) {
+    private void validateItemRequest(ItemRequest request, List<MultipartFile> images) {
         if (Objects.isNull(request.name()) || request.name().isBlank()) {
             throw new IllegalArgumentException("O nome do item não pode ser vazio.");
         }
@@ -175,8 +175,18 @@ public class ItemService {
             throw new IllegalArgumentException("O tipo do item é obrigatório (PRODUCT ou SERVICE).");
         }
 
-        if (Objects.isNull(image) || image.isEmpty() || image.getSize() == 0) {
-            throw new IllegalArgumentException("A imagem do item não pode ser vazia.");
+        if (images == null || images.isEmpty()) {
+            throw new IllegalArgumentException("Você deve enviar pelo menos uma imagem para o item.");
+        }
+        
+        if (images.size() > 5) {
+            throw new IllegalArgumentException("É permitido enviar no máximo 5 imagens por item.");
+        }
+
+        for (MultipartFile img : images) {
+            if (img.isEmpty() || img.getSize() == 0) {
+                throw new IllegalArgumentException("Nenhuma das imagens enviadas pode ser vazia ou corrompida.");
+            }
         }
     }
 

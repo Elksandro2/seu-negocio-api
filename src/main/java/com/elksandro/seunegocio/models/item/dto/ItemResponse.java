@@ -1,6 +1,7 @@
 package com.elksandro.seunegocio.models.item.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.elksandro.seunegocio.models.business.dto.BusinessSummaryResponse;
 import com.elksandro.seunegocio.models.item.enums.OfferType;
@@ -12,6 +13,6 @@ public record ItemResponse(
     BigDecimal price,
     Integer stockQuantity,
     OfferType offerType,
-    String imageUrl,
+    List<String> imageUrls,
     BusinessSummaryResponse business
 ) {}

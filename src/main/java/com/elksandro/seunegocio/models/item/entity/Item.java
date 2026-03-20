@@ -1,6 +1,8 @@
 package com.elksandro.seunegocio.models.item.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.elksandro.seunegocio.models.business.entity.Business;
 import com.elksandro.seunegocio.models.item.enums.OfferType;
@@ -42,5 +44,6 @@ public class Item {
     @JoinColumn(name = "business_id", nullable = false)
     private Business business;
 
-    private String imageKey;
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemImage> images = new ArrayList<>();
 }

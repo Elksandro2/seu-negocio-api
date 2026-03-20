@@ -40,14 +40,14 @@ public class ItemController {
                  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ItemResponse> createItem(
             @RequestPart("itemRequest") String itemRequestJson,
-            @RequestPart("image") MultipartFile image,
+            @RequestPart("images") List<MultipartFile> images,
             @AuthenticationPrincipal User loggedUser) 
             throws Exception { 
         
         ObjectMapper objectMapper = new ObjectMapper();
         ItemRequest itemRequest = objectMapper.readValue(itemRequestJson, ItemRequest.class);
 
-        ItemResponse itemResponse = itemService.createItem(itemRequest, image, loggedUser.getId());
+        ItemResponse itemResponse = itemService.createItem(itemRequest, images, loggedUser.getId());
         
         return ResponseEntity.status(HttpStatus.CREATED).body(itemResponse);
     }
