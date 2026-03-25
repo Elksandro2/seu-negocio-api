@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> {
                     // ROTAS PÚBLICAS
-                    request.requestMatchers("/", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
+                    request.requestMatchers("/", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/error").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/v1/user/register").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll();
                     request.requestMatchers(HttpMethod.GET, "/v1/businesses/**").permitAll();
