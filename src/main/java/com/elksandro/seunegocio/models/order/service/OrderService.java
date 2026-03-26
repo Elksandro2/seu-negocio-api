@@ -171,7 +171,8 @@ public class OrderService {
                 imageUrl,
                 orderItem.getQuantity(),
                 orderItem.getUnitPrice(),
-                orderItem.getSubtotal()
+                orderItem.getSubtotal(),
+                item.getOfferType()
         );
     }
 }
