@@ -1,5 +1,7 @@
 package com.elksandro.seunegocio.models.cartItem.entity;
 
+import java.time.LocalDateTime;
+
 import com.elksandro.seunegocio.models.item.entity.Item;
 import com.elksandro.seunegocio.models.user.entity.User;
 
@@ -33,4 +35,7 @@ public class CartItem {
 
     @Column(nullable = false)
     private Integer quantity;
+
+    @Column(name = "scheduled_at")
+    private LocalDateTime scheduledAt;
 }

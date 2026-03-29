@@ -1,6 +1,7 @@
 package com.elksandro.seunegocio.models.order.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import com.elksandro.seunegocio.models.item.entity.Item;
 
@@ -38,4 +39,7 @@ public class OrderItem {
 
     @Column(nullable = false)
     private BigDecimal subtotal;
+
+    @Column(name = "scheduled_at")
+    private LocalDateTime scheduledAt;
 }

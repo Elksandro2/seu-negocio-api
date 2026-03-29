@@ -15,6 +15,7 @@ import com.elksandro.seunegocio.models.cartItem.entity.CartItem;
 import com.elksandro.seunegocio.models.cartItem.repository.CartItemRepository;
 import com.elksandro.seunegocio.models.images.service.MinioService;
 import com.elksandro.seunegocio.models.item.entity.Item;
+import com.elksandro.seunegocio.models.item.enums.OfferType;
 import com.elksandro.seunegocio.models.item.repository.ItemRepository;
 import com.elksandro.seunegocio.models.order.dto.OrderItemResponse;
 import com.elksandro.seunegocio.models.order.dto.OrderResponse;
@@ -77,18 +78,20 @@ public class OrderService {
             for (CartItem cartItem : businessCartItems) {
                 Item item = cartItem.getItem();
                 
-                if (item.getStockQuantity() < cartItem.getQuantity()) {
-                    throw new InsufficientStockException("Estoque insuficiente para o produto '" + item.getName() + "'. Disponível: " + item.getStockQuantity());
+                if (item.getOfferType().equals(OfferType.PRODUCT)) {
+                    if (item.getStockQuantity() < cartItem.getQuantity()) {
+                        throw new InsufficientStockException("Estoque insuficiente para o produto '" + item.getName() + "'. Disponível: " + item.getStockQuantity());
+                    }
+
+                    item.setStockQuantity(item.getStockQuantity() - cartItem.getQuantity());
+                    itemRepository.save(item);
                 }
-                
-                item.setStockQuantity(item.getStockQuantity() - cartItem.getQuantity());
-                itemRepository.save(item);
 
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order);
                 orderItem.setItem(item);
                 orderItem.setQuantity(cartItem.getQuantity());
-                
+                orderItem.setScheduledAt(cartItem.getScheduledAt());
                 BigDecimal unitPrice = item.getPrice();
                 orderItem.setUnitPrice(unitPrice);
                 
@@ -172,7 +175,8 @@ public class OrderService {
                 orderItem.getQuantity(),
                 orderItem.getUnitPrice(),
                 orderItem.getSubtotal(),
-                item.getOfferType()
+                item.getOfferType(),
+                orderItem.getScheduledAt()
         );
     }
 }

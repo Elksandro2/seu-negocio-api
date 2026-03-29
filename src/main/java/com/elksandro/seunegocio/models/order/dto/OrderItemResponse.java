@@ -1,8 +1,10 @@
 package com.elksandro.seunegocio.models.order.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import com.elksandro.seunegocio.models.item.enums.OfferType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public record OrderItemResponse(
     Long id,
@@ -12,5 +14,7 @@ public record OrderItemResponse(
     Integer quantity,
     BigDecimal unitPrice,
     BigDecimal subtotal,
-    OfferType offerType
+    OfferType offerType,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime scheduledAt
 ) {}

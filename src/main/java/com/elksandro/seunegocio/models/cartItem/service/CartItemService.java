@@ -51,8 +51,9 @@ public class CartItemService {
         if (existingCartItem.isPresent()) {
             cartItem = existingCartItem.get();
             cartItem.setQuantity(cartItem.getQuantity() + cartItemRequest.quantity());
+            cartItem.setScheduledAt(cartItemRequest.scheduledAt());
         } else {
-            cartItem = new CartItem(null, user, item, cartItemRequest.quantity());
+            cartItem = new CartItem(null, user, item, cartItemRequest.quantity(), cartItemRequest.scheduledAt());
         }
 
         if (cartItem.getQuantity() <= 0) {
@@ -108,7 +109,8 @@ public class CartItemService {
                 cartItem.getId(),
                 cartItem.getQuantity(),
                 subtotal,
-                itemSummary
+                itemSummary,
+                cartItem.getScheduledAt()
         );
     }
 }
