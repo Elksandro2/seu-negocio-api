@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.elksandro.seunegocio.models.cartItem.entity.CartItem;
+import com.elksandro.seunegocio.models.item.entity.Item;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     Optional<CartItem> findByUserIdAndItemId(Long userId, Long itemId);
     List<CartItem> findByUserId(Long userId);
+    void deleteAllByItem(Item item);
 }

@@ -5,12 +5,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.elksandro.seunegocio.models.business.dto.BusinessSummaryResponse;
 import com.elksandro.seunegocio.models.business.entity.Business;
 import com.elksandro.seunegocio.models.business.repository.BusinessRepository;
 import com.elksandro.seunegocio.models.business.service.exception.BusinessNotFoundException;
+import com.elksandro.seunegocio.models.cartItem.repository.CartItemRepository;
 import com.elksandro.seunegocio.models.images.service.MinioService;
 import com.elksandro.seunegocio.models.item.dto.ItemRequest;
 import com.elksandro.seunegocio.models.item.dto.ItemResponse;
@@ -27,12 +29,14 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final BusinessRepository businessRepository;
     private final MinioService minioService;
+    private final CartItemRepository cartItemRepository;
 
     public ItemService(ItemRepository itemRepository, BusinessRepository businessRepository,
-            MinioService minioService) {
+            MinioService minioService, CartItemRepository cartItemRepository) {
         this.itemRepository = itemRepository;
         this.businessRepository = businessRepository;
         this.minioService = minioService;
+        this.cartItemRepository = cartItemRepository;
     }
 
     public ItemResponse createItem(ItemRequest itemRequest, List<MultipartFile> images, Long loggedUserId) throws Exception {
@@ -102,11 +106,14 @@ public class ItemService {
         return convertToResponse(updatedItem);
     }
 
+    @Transactional
     public void deleteItem(Long itemId, Long loggedUserId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Item não encontrado para remoção."));
 
         verifyItemOwner(item, loggedUserId);
+
+        cartItemRepository.deleteAllByItem(item);
 
         for (ItemImage img : item.getImages()) {
             minioService.deleteObject(img.getImageKey());
@@ -189,5 +196,4 @@ public class ItemService {
             }
         }
     }
-
 }
